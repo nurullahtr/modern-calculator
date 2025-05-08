@@ -15,7 +15,7 @@ function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false,
       preload: path.join(__dirname, isDev ? 'electron/preload.js' : 'preload.js'),
-      devTools: true  // Temporarily enable DevTools
+      devTools: false
     },
     frame: false,
     resizable: false,
@@ -38,9 +38,6 @@ function createWindow() {
       console.log('Resource path:', process.resourcesPath);
     });
   }
-
-  // Enable DevTools for debugging
-  mainWindow.webContents.openDevTools();
 
   // Log any page errors
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
