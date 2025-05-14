@@ -55,6 +55,11 @@ Build a portable Windows executable:
 npm run electron:build
 ```
 
+Build a macOS application (requires macOS):
+```bash
+npm run electron:build:mac
+```
+
 The built application will be available in the `dist_electron` folder.
 
 ## Usage Guide
