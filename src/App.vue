@@ -75,16 +75,129 @@
                 </v-col>
               </template>
               <template v-else>
-                <v-col v-for="btn in currencyButtons" :key="btn" cols="3">
+                <!-- First Row -->
+                <v-col cols="3">
                   <v-btn
                     block
-                    :color="btn === '⌫' ? 'warning' : 'secondary'"
-                    @click="handleButton(btn)"
+                    color="secondary"
+                    @click="handleButton('7')"
                     class="calculator-button currency-button text-h6"
-                    :data-key="getKeyboardShortcut(btn)"
-                  >
-                    {{ btn }}
-                  </v-btn>
+                    data-key="7"
+                  >7</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('8')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="8"
+                  >8</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('9')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="9"
+                  >9</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="warning"
+                    @click="handleButton('⌫')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="Backspace"
+                  >⌫</v-btn>
+                </v-col>
+                
+                <!-- Second Row -->
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('4')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="4"
+                  >4</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('5')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="5"
+                  >5</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('6')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="6"
+                  >6</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="error"
+                    @click="handleButton('C')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="Esc"
+                  >C</v-btn>
+                </v-col>
+                
+                <!-- Third Row -->
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('1')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="1"
+                  >1</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('2')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="2"
+                  >2</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('3')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="3"
+                  >3</v-btn>
+                </v-col>
+                <v-col cols="3">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('.')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="."
+                  >.</v-btn>
+                </v-col>
+                
+                <!-- Fourth Row -->
+                <v-col cols="12">
+                  <v-btn
+                    block
+                    color="secondary"
+                    @click="handleButton('0')"
+                    class="calculator-button currency-button text-h6"
+                    data-key="0"
+                  >0</v-btn>
                 </v-col>
               </template>
             </v-row>
@@ -103,7 +216,7 @@
         <MultiCurrencyPanel
           v-if="mode === 'currency'"
           :amount="Number(display)"
-          :sourceCurrency="fromCurrency"
+          v-model:sourceCurrency="fromCurrency"
         />
 
         <!-- History Panel -->
@@ -224,7 +337,7 @@ export default {
     const display = ref('0')
     const expression = ref('')
     const mode = ref('basic')
-    const fromCurrency = ref('TRY')
+    const fromCurrency = ref('JPY')
     const toCurrency = ref('EUR')
     const calculationHistory = ref([])
     const currentOperation = ref(null)
@@ -252,8 +365,7 @@ export default {
       '7', '8', '9',
       '4', '5', '6',
       '1', '2', '3',
-      '0', '.', 'C',
-      '⌫'
+      '0', '.', 'C'
     ]
 
     const updateExchangeRate = async () => {

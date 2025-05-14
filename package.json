@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "electron:dev": "concurrently \"npm run dev\" \"wait-on tcp:5173 && electron .\"",
-    "electron:build": "npm run clean && vite build && electron-builder --win portable",
+    "electron:build": "npm run clean && vite build && electron-builder --win nsis",
+    "electron:build:mac": "npm run clean && vite build && electron-builder --mac",
     "clean": "rimraf dist dist_electron .electron-vue/build",
     "rebuild": "npm run clean && npm run electron:build"
   },
@@ -29,6 +30,7 @@
     "electron-builder": "^24.3.0",
     "postcss": "^8.4.24",
     "rimraf": "^6.0.1",
+    "sharp": "^0.34.1",
     "vite": "^4.3.9",
     "wait-on": "^7.0.1"
   },
@@ -48,7 +50,12 @@
           ]
         }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities"
     },
     "nsis": {
       "oneClick": false,
@@ -56,9 +63,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Modern Calculator",
-      "installerIcon": "build/icon.png",
-      "uninstallerIcon": "build/icon.png",
-      "installerHeaderIcon": "build/icon.png"
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
     },
     "files": [
       "dist/**/*",

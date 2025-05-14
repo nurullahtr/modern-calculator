@@ -7,9 +7,9 @@ let mainWindow = null;
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
-    height: 800,
-    minHeight: 800,
-    maxHeight: 800,
+    height: 900,
+    minHeight: 900,
+    maxHeight: 1000,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -18,7 +18,7 @@ function createWindow() {
       devTools: false
     },
     frame: false,
-    resizable: false,
+    resizable: true,
     transparent: false,
     backgroundColor: '#ffffff',
     useContentSize: true,

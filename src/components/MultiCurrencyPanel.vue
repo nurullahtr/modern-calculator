@@ -16,11 +16,17 @@
           :key="currency"
           variant="outlined"
           class="currency-card ma-1"
+          @click="swapWithSource(currency)"
+          :class="{'clickable': true}"
         >
           <v-card-text class="pa-2">
             <div class="text-caption">{{ sourceCurrency }} to {{ currency }}</div>
             <div class="text-h6">{{ formatAmount(convertedAmounts[currency]) }}</div>
             <div class="text-caption">1 {{ sourceCurrency }} = {{ formatRate(exchangeRates[currency]) }} {{ currency }}</div>
+            <div class="swap-hint">
+              <v-icon size="12" class="mr-1">mdi-swap-horizontal</v-icon>
+              <span class="text-caption">Click to swap</span>
+            </div>
           </v-card-text>
         </v-card>
       </div>
@@ -72,18 +78,25 @@ export default {
       required: true
     }
   },
-  setup(props) {
+  emits: ['update:sourceCurrency'],
+  setup(props, { emit }) {
     const showSettings = ref(false)
     const selectedCurrencies = ref(['EUR', 'TRY', 'USD', 'CAD'])
     const exchangeRates = ref({})
     const convertedAmounts = ref({})
 
-    const availableCurrencies = [
-      'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'TRY',
-      'KRW', 'SGD', 'HKD', 'MXN', 'BRL'
-    ].filter(currency => {
-      return currency === 'TRY' || currency !== props.sourceCurrency;
-    })
+    // Ensure TRY and other currencies are available
+    const getAvailableCurrencies = () => {
+      return [
+        'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'TRY',
+        'KRW', 'SGD', 'HKD', 'MXN', 'BRL'
+      ].filter(currency => {
+        return currency === 'TRY' || currency !== props.sourceCurrency;
+      });
+    }
+
+    // Recalculate available currencies when source changes
+    const availableCurrencies = ref(getAvailableCurrencies());
 
     const updateRates = async () => {
       try {
@@ -110,9 +123,29 @@ export default {
     const formatRate = (rate) => {
       return rate ? rate.toFixed(4) : '0.0000'
     }
+    
+    // Function to swap a destination currency with source currency
+    const swapWithSource = (currency) => {
+      // Add current source to selected currencies if it's not already there
+      if (!selectedCurrencies.value.includes(props.sourceCurrency)) {
+        selectedCurrencies.value.push(props.sourceCurrency);
+      }
+      
+      // Remove the new source from selected currencies
+      selectedCurrencies.value = selectedCurrencies.value.filter(c => c !== currency);
+      
+      // Emit event to update source currency in parent component
+      emit('update:sourceCurrency', currency);
+    }
 
     watch(() => props.amount, calculateConversions)
-    watch(() => props.sourceCurrency, updateRates)
+    
+    watch(() => props.sourceCurrency, () => {
+      // Update available currencies when source changes
+      availableCurrencies.value = getAvailableCurrencies();
+      updateRates();
+    })
+    
     watch(selectedCurrencies, calculateConversions)
 
     // Initial rates fetch
@@ -125,7 +158,8 @@ export default {
       exchangeRates,
       convertedAmounts,
       formatAmount,
-      formatRate
+      formatRate,
+      swapWithSource
     }
   }
 }
@@ -162,9 +196,22 @@ export default {
   transition: all 0.3s ease;
 }
 
+.currency-card.clickable {
+  cursor: pointer;
+}
+
 .currency-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.swap-hint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 4px;
+  opacity: 0.6;
 }
 
 /* Custom scrollbar styles */

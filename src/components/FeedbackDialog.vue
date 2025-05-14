@@ -7,27 +7,29 @@
         <v-btn icon="mdi-close" variant="text" size="small" @click="close"></v-btn>
       </v-card-title>
       <v-card-text>
-        <v-text-field
-          v-model="email"
-          label="Your Email"
-          type="email"
-          :rules="[rules.required, rules.email]"
-          required
-        ></v-text-field>
-        <v-textarea
-          v-model="message"
-          label="Your Feedback"
-          :rules="[rules.required, rules.maxLength]"
-          rows="4"
-          :maxlength="500"
-          required
-        ></v-textarea>
-        <div class="text-right text-caption mt-1" style="color: #888;">
-          {{ toRoman(message.length) }} / {{ toRoman(500) }}<br>
-          {{ 500 - message.length }} characters left
-        </div>
-        <v-alert v-if="success" type="success" class="mt-2">Thank you for your feedback!</v-alert>
-        <v-alert v-if="error" type="error" class="mt-2">Failed to send feedback. Please try again.</v-alert>
+        <v-form ref="form">
+          <v-text-field
+            v-model="email"
+            label="Your Email"
+            type="email"
+            :rules="[rules.required, rules.email]"
+            required
+          ></v-text-field>
+          <v-textarea
+            v-model="message"
+            label="Your Feedback"
+            :rules="[rules.required, rules.maxLength]"
+            rows="4"
+            :maxlength="500"
+            required
+          ></v-textarea>
+          <div class="text-right text-caption mt-1" style="color: #888;">
+            {{ toRoman(message.length) }} / {{ toRoman(500) }}<br>
+            {{ 500 - message.length }} characters left
+          </div>
+          <v-alert v-if="success" type="success" class="mt-2">Thank you for your feedback!</v-alert>
+          <v-alert v-if="error" type="error" class="mt-2">Failed to send feedback. Please try again.</v-alert>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -54,11 +56,12 @@ export default {
     const loading = ref(false)
     const success = ref(false)
     const error = ref(false)
+    const form = ref(null)
 
-    // Dummy EmailJS config (replace with your real values)
-    const SERVICE_ID = 'service_xxxxxxx'
-    const TEMPLATE_ID = 'template_xxxxxxx'
-    const USER_ID = 'user_xxxxxxxxxxxxxxxxx'
+    // EmailJS config
+    const SERVICE_ID = 'service_kyryc6l'
+    const TEMPLATE_ID = 'template_tgz0gsl'
+    const USER_ID = 'iA4d1MtNfPCXTRPwz'
 
     const rules = {
       required: v => !!v || 'Required',
@@ -69,12 +72,19 @@ export default {
     watch(() => props.modelValue, v => (show.value = v))
     watch(show, v => emit('update:modelValue', v))
 
-    const close = () => {
-      show.value = false
+    const resetForm = () => {
+      if (form.value) {
+        form.value.resetValidation()
+      }
       email.value = ''
       message.value = ''
       success.value = false
       error.value = false
+    }
+
+    const close = () => {
+      show.value = false
+      resetForm()
     }
 
     const sendFeedback = async () => {
@@ -84,13 +94,13 @@ export default {
       success.value = false
       try {
         await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-          user_email: email.value,
-          message: message.value
+          message: message.value,
+          email: email.value
         }, USER_ID)
         success.value = true
-        email.value = ''
-        message.value = ''
+        resetForm()
       } catch (e) {
+        console.error("EmailJS error:", e);
         error.value = true
       } finally {
         loading.value = false
@@ -124,7 +134,8 @@ export default {
       rules,
       close,
       sendFeedback,
-      toRoman
+      toRoman,
+      form
     }
   }
 }
